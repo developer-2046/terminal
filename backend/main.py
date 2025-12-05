@@ -423,10 +423,100 @@ def get_portfolio(db: Session = Depends(get_db)):
             "expiration": h.expiration
         })
         
+    # --- Performance Stats ---
+    transactions = db.query(Transaction).order_by(Transaction.timestamp).all()
+    
+    realized_pnl = 0.0
+    wins = 0
+    losses = 0
+    consecutive_losses = 0
+    max_consecutive_losses = 0
+    
+    # FIFO Matching for Realized P&L
+    # Map: symbol -> list of [quantity, price]
+    inventory = {} 
+    
+    for t in transactions:
+        sym = t.symbol
+        if t.asset_type == "option":
+            sym = f"{t.symbol}_{t.option_type}_{t.strike}_{t.expiration}"
+            
+        if t.action == "buy":
+            if sym not in inventory: inventory[sym] = []
+            inventory[sym].append([t.quantity, t.price])
+        elif t.action == "sell":
+            qty_to_sell = t.quantity
+            while qty_to_sell > 0 and sym in inventory and inventory[sym]:
+                # FIFO: Pop from front
+                buy_qty, buy_price = inventory[sym][0]
+                
+                matched_qty = min(qty_to_sell, buy_qty)
+                
+                # Calculate P&L for this chunk
+                pnl = (t.price - buy_price) * matched_qty
+                realized_pnl += pnl
+                
+                if pnl > 0:
+                    wins += 1
+                    consecutive_losses = 0
+                elif pnl < 0:
+                    losses += 1
+                    consecutive_losses += 1
+                    max_consecutive_losses = max(max_consecutive_losses, consecutive_losses)
+                
+                # Update inventory
+                if matched_qty == buy_qty:
+                    inventory[sym].pop(0) # Fully sold this lot
+                else:
+                    inventory[sym][0][0] -= matched_qty # Partially sold
+                    
+                qty_to_sell -= matched_qty
+
+    total_trades = wins + losses
+    win_rate = (wins / total_trades * 100) if total_trades > 0 else 0
+    
+    # --- Risk Metrics ---
+    sector_exposure = {}
+    asset_allocation = {"Stock": 0.0, "Option": 0.0, "Cash": portfolio.balance}
+    
+    for h in detailed_holdings:
+        # Asset Allocation
+        if h['asset_type'] == "option":
+            asset_allocation["Option"] += h['market_value']
+        else:
+            asset_allocation["Stock"] += h['market_value']
+            
+        # Sector Exposure (Stocks only for now)
+        if h['asset_type'] == "stock":
+            try:
+                # We might need to cache this to avoid slow API calls
+                # For now, let's try to get it from info if available, or just use symbol
+                # Ideally we'd store sector in DB or fetch in batch.
+                # To keep it fast, let's assume we can get it from yfinance quickly or skip
+                # Using fast_info doesn't give sector. 
+                # Let's skip live sector fetch for speed and just group by symbol for now
+                # Or try to fetch from yfinance info but catch errors
+                pass 
+            except:
+                pass
+
+    # Normalize Allocation
+    total_assets = asset_allocation["Stock"] + asset_allocation["Option"] + asset_allocation["Cash"]
+    allocation_pct = {k: (v / total_assets * 100) for k, v in asset_allocation.items()}
+
     return {
         "balance": portfolio.balance, 
         "total_value": total_value,
-        "holdings": detailed_holdings
+        "holdings": detailed_holdings,
+        "stats": {
+            "realized_pnl": realized_pnl,
+            "win_rate": win_rate,
+            "total_trades": total_trades,
+            "max_consecutive_losses": max_consecutive_losses
+        },
+        "risk": {
+            "allocation": allocation_pct
+        }
     }
 
 @app.get("/api/watchlist")
