@@ -66,8 +66,8 @@
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/yourusername/the-terminal.git
-cd the-terminal
+git clone https://github.com/developer-2046/terminal.git
+cd terminal
 ```
 
 ### 2. Backend Setup
