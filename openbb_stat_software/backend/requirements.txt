@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+openbb
+numpy
+pandas
+pydantic
+sqlalchemy
+scikit-learn
