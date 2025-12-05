@@ -46,7 +46,7 @@ export default function BacktestPage() {
         setResult(null);
 
         try {
-            const res = await fetch('http://localhost:8000/api/backtest', {
+            const res = await fetch('http://127.0.0.1:8000/api/backtest', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

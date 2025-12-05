@@ -18,7 +18,7 @@ export const TradePanel = ({ symbol, currentPrice, onTrade }: TradePanelProps) =
         setLoading(true);
         setMsg("");
         try {
-            const res = await fetch('http://localhost:8000/api/trade', {
+            const res = await fetch('http://127.0.0.1:8000/api/trade', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

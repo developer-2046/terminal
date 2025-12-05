@@ -23,7 +23,7 @@ export const AdvisorWidget = ({ symbol }: AdvisorWidgetProps) => {
         setLoading(true);
         setData(null);
         try {
-            const res = await fetch(`http://localhost:8000/api/recommendation/${symbol}`);
+            const res = await fetch(`http://127.0.0.1:8000/api/recommendation/${symbol}`);
             const result = await res.json();
             setData(result);
         } catch (e) {

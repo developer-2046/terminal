@@ -13,7 +13,7 @@ export default function OptionsPage() {
     const fetchOptions = async (sym: string, date?: string) => {
         setLoading(true);
         try {
-            let url = `http://localhost:8000/api/options/${sym}`;
+            let url = `http://127.0.0.1:8000/api/options/${sym}`;
             if (date) url += `?date=${date}`;
 
             const res = await fetch(url);
@@ -38,7 +38,7 @@ export default function OptionsPage() {
         if (!quantity) return;
 
         try {
-            const res = await fetch('http://localhost:8000/api/trade', {
+            const res = await fetch('http://127.0.0.1:8000/api/trade', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

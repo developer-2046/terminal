@@ -18,7 +18,7 @@ export default function Home() {
 
   const fetchWatchlist = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/watchlist');
+      const res = await fetch('http://127.0.0.1:8000/api/watchlist');
       const data = await res.json();
       if (data && data.length > 0) {
         setWatchlist(data);
@@ -34,7 +34,7 @@ export default function Home() {
   const updateWatchlist = async (newSymbols: string[]) => {
     setWatchlist(newSymbols);
     try {
-      await fetch('http://localhost:8000/api/watchlist', {
+      await fetch('http://127.0.0.1:8000/api/watchlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ symbols: newSymbols })
@@ -47,7 +47,7 @@ export default function Home() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://localhost:8000/api/market-data/${symbol}`);
+      const res = await fetch(`http://127.0.0.1:8000/api/market-data/${symbol}`);
       const data = await res.json();
       setMarketData(data.data || []);
       // Clear simulations when changing stock/reloading
@@ -62,7 +62,7 @@ export default function Home() {
 
   const fetchPortfolio = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/portfolio');
+      const res = await fetch('http://127.0.0.1:8000/api/portfolio');
       const data = await res.json();
       setPortfolio(data);
     } catch (e) {
@@ -72,7 +72,7 @@ export default function Home() {
 
   const runSimulation = async () => {
     try {
-      const res = await fetch('http://localhost:8000/api/simulate/gbm', {
+      const res = await fetch('http://127.0.0.1:8000/api/simulate/gbm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ symbol, days: 30, simulations: 5 })
@@ -98,7 +98,7 @@ export default function Home() {
   const exerciseOption = async (holdingId: number) => {
     if (!confirm("Are you sure you want to exercise this option?")) return;
     try {
-      const res = await fetch('http://localhost:8000/api/portfolio/exercise', {
+      const res = await fetch('http://127.0.0.1:8000/api/portfolio/exercise', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ holding_id: holdingId })

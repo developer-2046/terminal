@@ -14,7 +14,7 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/market-data/${symbol}`);
+                const res = await fetch(`http://127.0.0.1:8000/api/market-data/${symbol}`);
                 if (!res.ok) throw new Error("Failed to fetch data");
                 const json = await res.json();
                 setData(json);

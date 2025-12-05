@@ -18,7 +18,7 @@ export default function AdvisorPage() {
         const fetchAdvice = async () => {
             if (!symbol) return;
             try {
-                const res = await fetch(`http://localhost:8000/api/recommendation/${symbol}`);
+                const res = await fetch(`http://127.0.0.1:8000/api/recommendation/${symbol}`);
                 const result = await res.json();
                 setData(result);
             } catch (e) {

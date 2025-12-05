@@ -18,11 +18,11 @@ export default function EntropyPage() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                let url = 'http://localhost:8000/api/entropy';
+                let url = 'http://127.0.0.1:8000/api/entropy';
                 const params = new URLSearchParams();
                 if (startDate) params.append('start_date', startDate);
                 if (endDate) params.append('end_date', endDate);
-                
+
                 if (params.toString()) url += `?${params.toString()}`;
 
                 const res = await fetch(url);

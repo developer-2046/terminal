@@ -19,7 +19,7 @@ export default function SentimentPage() {
         setData(null);
 
         try {
-            const res = await fetch(`http://localhost:8000/api/sentiment/${symbol.toUpperCase()}`);
+            const res = await fetch(`http://127.0.0.1:8000/api/sentiment/${symbol.toUpperCase()}`);
             if (!res.ok) throw new Error('Failed to fetch sentiment data');
             const result = await res.json();
             setData(result);
